@@ -7,7 +7,6 @@
             v-for="field in fields"
             :key="field.id">
         </div>
-        {{currentColor}}
     </div>
 </template>
 
@@ -16,17 +15,18 @@ export default {
     props: {
         fields: Array,
         color: String,
-        modelValue: Array,
-        game: Boolean
     },
     data() {
         return {
-            currentColor: ''
+            currentColor: '',
         }
     },
     methods: {
-        userColor(color) {
+        userColor(color, url) {
             this.currentColor = color
+            const audio = new Audio(url)
+            audio.src = `assets/${color}.mp3`
+            audio.play()
             this.$emit('create', this.currentColor)
         },
     },

@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="app__game">
-      <GameField @create="setUserColor" v-model="playerColor" :game="isGame" :color="currentColor" :fields="gameFields" />  
+      <GameField @create="setUserColor" :color="currentColor" :fields="gameFields" />  
     </div>
     <div class="app__game-settings">
       {{round}}
@@ -64,9 +64,13 @@
         return new Promise(resolve => setTimeout(resolve, ms))
       },
       async flashColor() {
+        const audio = new Audio()
+            
         for(let i = 0; i < this.randomColor.length; i++) {
             await this.timeout(Number(this.mode))
             this.currentColor = this.randomColor[i]
+            audio.src = `assets/${this.currentColor}.mp3`
+            audio.play()
             await this.timeout(Number(this.mode))
             this.currentColor = ''
           }
