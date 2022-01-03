@@ -4,11 +4,12 @@
       <GameField @create="setUserColor" :color="currentColor" :fields="gameFields" />  
     </div>
     <div class="app__game-settings">
-      {{round}}
+      <h3>Раунд {{ !isGame ? '1' : round}}</h3>
       <button @click="isGame = !isGame">{{ isGame ? 'Рестарт' : 'Старт'}}</button>
-      <input name="mode" value="1500" type="radio" v-model="mode">1.5s
-      <input name="mode" value="1000" type="radio" checked v-model="mode">1s
-      <input name="mode" value="400" type="radio" v-model="mode">0.4s
+      <h3>Уровень сложности:</h3>
+      <input name="mode" value="1500" type="radio" v-model="mode">Лёгкий
+      <input name="mode" value="1000" type="radio" checked v-model="mode">Средний
+      <input name="mode" value="400" type="radio" v-model="mode">Сложный
     </div>
   </div>
 </template>
@@ -84,7 +85,6 @@
             this.round = 1
             this.setRandomColor()
             this.flashColor()
-            console.log(1)
           } else {
             this.randomColor = []
             this.playerColor = []
