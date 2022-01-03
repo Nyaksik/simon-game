@@ -7,6 +7,7 @@
             v-for="field in fields"
             :key="field.id">
         </div>
+        {{currentColor}}
     </div>
 </template>
 
@@ -20,13 +21,13 @@ export default {
     },
     data() {
         return {
-            choiceColorArray: [],
+            currentColor: ''
         }
     },
     methods: {
         userColor(color) {
-            this.choiceColorArray = !this.game ? [] : [...this.choiceColorArray, color]
-            this.$emit('update:modelValue', this.choiceColorArray)
+            this.currentColor = color
+            this.$emit('create', this.currentColor)
         },
     },
 }

@@ -1,9 +1,10 @@
 <template>
   <div class="app">
     <div class="app__game">
-      <GameField v-model="playerColor" :game="isGame" :color="currentColor" :fields="gameFields" />  
+      <GameField @create="setUserColor" v-model="playerColor" :game="isGame" :color="currentColor" :fields="gameFields" />  
     </div>
     <div class="app__game-settings">
+      {{round}}
       <button @click="isGame = !isGame">{{ isGame ? 'Рестарт' : 'Старт'}}</button>
       <input name="mode" value="1500" type="radio" v-model="mode">1.5s
       <input name="mode" value="1000" type="radio" checked v-model="mode">1s
@@ -48,6 +49,9 @@
       }
     },
     methods: {
+      setUserColor(color) {
+        this.playerColor = [...this.playerColor, color]
+      },
       setRandomColor() {
         let count = this.round
         while(count !== 0) {
@@ -61,24 +65,51 @@
       },
       async flashColor() {
         for(let i = 0; i < this.randomColor.length; i++) {
+            await this.timeout(Number(this.mode))
             this.currentColor = this.randomColor[i]
             await this.timeout(Number(this.mode))
             this.currentColor = ''
-            await this.timeout(Number(this.mode))
           }
         }
       },
       watch: {
         isGame() {
           if(this.isGame) {
+            this.playerColor = []
+            this.randomColor = []
+            this.round = 1
+            this.setRandomColor()
+            this.flashColor()
+            console.log(1)
+          } else {
+            this.randomColor = []
+            this.playerColor = []
+            this.currentColor = ''
+          }
+        },
+        round(newValue, prev) {
+          if(newValue - prev > 1) {
+            this.round = prev + 1
+          }
+          if(this.isGame && this.round > 1) {
+            this.randomColor = []
+            this.playerColor = []
+            this.currentColor = ''
             this.setRandomColor()
             this.flashColor()
           } else {
-            console.log('restart')
-            this.randomColor = []
-            this.playerColor = []
-            this.round = 4
-            this.currentColor = ''
+            this.round = 1
+          }
+        },
+        playerColor(newValue) {
+          for(let i = 0; i < newValue.length; i++) {
+            if(newValue[i] !== this.randomColor[i]) {
+              this.isGame = false
+              alert('Вы проиграли!')
+            }
+            if(newValue.length === this.randomColor.length) {
+              this.round += 1
+            }
           }
         }
       }
