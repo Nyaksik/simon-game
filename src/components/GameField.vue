@@ -1,5 +1,5 @@
 <template>
-    <div class="wrapper">
+    <div class="wrapper" :class="{block: !block}">
         <div
             class="field"
             :class="[{flash: color === field.color}, field.color]"
@@ -15,6 +15,7 @@ export default {
     props: {
         fields: Array,
         color: String,
+        block: Boolean
     },
     data() {
         return {
@@ -42,6 +43,17 @@ export default {
         margin: 50px auto;
         width: 200px;
         position: relative;
+    }
+    .block{
+        position: relative;
+        &::before {
+            content: '';
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            background-color: rgba($color: black, $alpha: .3);
+            z-index: 10;
+        }
     }
     .field {
         width: 100px;

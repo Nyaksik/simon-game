@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="app__game">
-      <GameField @create="setUserColor" :color="currentColor" :fields="gameFields" />  
+      <GameField @create="setUserColor" :block="isGame" :color="currentColor" :fields="gameFields" />  
     </div>
     <div class="app__game-settings">
       <h3>Раунд {{ !isGame ? '1' : round}}</h3>
