@@ -1,11 +1,12 @@
 <template>
   <div class="app">
     <div class="app__game">
-      <GameField @create="setUserColor" :block="isGame" :color="currentColor" :fields="gameFields" />  
+      <h3>{{ isFlash ? 'Запоминай последовательность' : isGame ? 'Повтори последовательность' : 'Начни игру!' }}</h3>
+      <h3>Раунд {{ !isGame ? '1' : round}}</h3>
+      <GameField @create="setUserColor" :block="isGame" :flash="isFlash" :color="currentColor" :fields="gameFields" />  
     </div>
     <div class="app__game-settings">
-      <h3>Раунд {{ !isGame ? '1' : round}}</h3>
-      <button @click="isGame = !isGame">{{ isGame ? 'Рестарт' : 'Старт'}}</button>
+      <button @click="isGame = !isGame">{{ isGame ? 'Стоп' : 'Старт' }}</button>
       <h3>Уровень сложности:</h3>
       <input name="mode" value="1500" type="radio" v-model="mode">Лёгкий
       <input name="mode" value="1000" type="radio" checked v-model="mode">Средний
@@ -43,6 +44,7 @@
         ],
         mode: 1000,
         isGame: false,
+        isFlash: false,
         randomColor: [],
         playerColor: [],
         round: 1,
@@ -54,9 +56,10 @@
         this.playerColor = [...this.playerColor, color]
       },
       setRandomColor() {
+        const colorsCount = 4
         let count = this.round
-        while(count !== 0) {
-          const randomDigit = Math.floor(Math.random() * 4)
+        while(count) {
+          const randomDigit = Math.floor(Math.random() * colorsCount)
           this.randomColor = [...this.randomColor, this.gameFields[randomDigit].color]
           count -= 1
         }
@@ -66,7 +69,7 @@
       },
       async flashColor() {
         const audio = new Audio()
-            
+        this.isFlash = true    
         for(let i = 0; i < this.randomColor.length; i++) {
             await this.timeout(Number(this.mode))
             this.currentColor = this.randomColor[i]
@@ -75,29 +78,24 @@
             await this.timeout(Number(this.mode))
             this.currentColor = ''
           }
+        this.isFlash = false  
         }
       },
       watch: {
         isGame() {
+          this.playerColor = []
+          this.randomColor = []
+          this.currentColor = ''
           if(this.isGame) {
-            this.playerColor = []
-            this.randomColor = []
             this.round = 1
             this.setRandomColor()
             this.flashColor()
-          } else {
-            this.randomColor = []
-            this.playerColor = []
-            this.currentColor = ''
           }
         },
-        round(newValue, prev) {
-          if(newValue - prev > 1) {
-            this.round = prev + 1
-          }
+        round() {
           if(this.isGame && this.round > 1) {
-            this.randomColor = []
             this.playerColor = []
+            this.randomColor = []
             this.currentColor = ''
             this.setRandomColor()
             this.flashColor()
@@ -111,9 +109,9 @@
               this.isGame = false
               alert('Вы проиграли!')
             }
-            if(newValue.length === this.randomColor.length) {
-              this.round += 1
-            }
+          }
+          if(newValue.length === this.randomColor.length) {
+            this.round += 1
           }
         }
       }
@@ -128,6 +126,7 @@
     flex-wrap: nowrap;
     &__game {
       margin-right: 100px;
+      text-align: center;
     }
     &__game-settings {
       display: flex;
@@ -135,7 +134,7 @@
       justify-content: center;
       align-items: center;
       & input {
-        margin-top: 15px;
+          margin-top: 15px;
       }
     }
   }
